@@ -18,16 +18,16 @@ OUTPUT_FILE = 'filtered/%Y-%m-%d/%H.txt'
 
 
 class STOMPListener(stomp.ConnectionListener):
-    def on_error(self, headers, body):
-        print('report_error', body)
+    def on_error(self, frame):
+        print('report_error', frame.body)
 
-    def on_message(self, headers, body):
+    def on_message(self, frame):
         msg_date = datetime.now()
         path = msg_date.strftime(OUTPUT_FILE)
         makedirs(dirname(path), exist_ok=True)
 
         with open(path, 'a') as f:
-            f.write(body + '\n')
+            f.write(frame.body + '\n')
 
 
 def listen():

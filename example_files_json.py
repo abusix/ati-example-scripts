@@ -39,11 +39,11 @@ BLOCKLIST_FILTERS = {
 
 
 class STOMPListener(stomp.ConnectionListener):
-    def on_error(self, headers, body):
-        print('report_error', body)
+    def on_error(self, frame):
+        print('report_error', frame.body)
 
-    def on_message(self, headers, body):
-        msg_json = json.loads(body)
+    def on_message(self, frame):
+        msg_json = json.loads(frame.body)
 
         for field, allowed in ALLOWLIST_FILTERS.items():
             if msg_json.get(field) not in allowed:
@@ -58,10 +58,10 @@ class STOMPListener(stomp.ConnectionListener):
         makedirs(path, exist_ok=True)
 
         if WRITE_RAW_FILES:
-            with open(path_join(path, str(hash(body)) + '.file'), 'wb') as f:
+            with open(path_join(path, str(hash(frame.body)) + '.file'), 'wb') as f:
                 f.write(b64decode(msg_json['attachment_base64_encoded']))
         else:
-            with open(path_join(path, str(hash(body)) + '.json'), 'w') as f:
+            with open(path_join(path, str(hash(frame.body)) + '.json'), 'w') as f:
                 json.dump(msg_json, f)
 
 

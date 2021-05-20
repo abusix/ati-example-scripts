@@ -33,11 +33,11 @@ BLOCKLIST_FILTERS = {
 
 
 class STOMPListener(stomp.ConnectionListener):
-    def on_error(self, headers, body):
-        print('report_error', body)
+    def on_error(self, frame):
+        print('report_error', frame.body)
 
-    def on_message(self, headers, body):
-        msg_json = json.loads(body)
+    def on_message(self, frame):
+        msg_json = json.loads(frame.body)
 
         if 'url_tld' not in msg_json:
             msg_json['url_tld'] = urlparse(msg_json.get('url')).hostname.split('.')[-1]
