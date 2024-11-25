@@ -36,7 +36,7 @@ ALLOWLIST_FILTERS = {
 BLOCKLIST_FILTERS = {
     # 'detected_extension': ['exe']
 }
-
+LOG_FIELDS = ['filename', 'content_type']
 
 class STOMPListener(stomp.ConnectionListener):
     def on_error(self, frame):
@@ -52,6 +52,12 @@ class STOMPListener(stomp.ConnectionListener):
         for field, forbidden in BLOCKLIST_FILTERS.items():
             if msg_json.get(field) in forbidden:
                 return
+
+        log_str = f'RECEIVED file'
+        for field in LOG_FIELDS:
+            log_str = log_str + f' {field}: {msg_json.get(field)}'
+        if LOG_FIELDS:
+            print(log_str)
 
         msg_date = datetime.now()
         path = msg_date.strftime(OUTPUT_DIRECTORY)
